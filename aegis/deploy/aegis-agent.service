@@ -1,0 +1,30 @@
+# deploy/aegis-agent.service — the agent stays on a Unix socket and never binds to a public TCP port.
+[Unit]
+Description=Aegis control-plane agent
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=aegis
+Group=aegis
+SupplementaryGroups=systemd-journal
+RuntimeDirectory=aegis
+RuntimeDirectoryMode=0750
+ExecStart=/usr/local/bin/aegis-agent -socket /run/aegis/aegis.sock -data /var/lib/aegis -key /etc/aegis/master.key
+Restart=on-failure
+RestartSec=3s
+AmbientCapabilities=
+CapabilityBoundingSet=
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/aegis /run/aegis /var/log/aegis
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

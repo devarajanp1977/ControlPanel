@@ -1,0 +1,44 @@
+# .github/workflows/ci.yml — CI runs the same basic quality gates the repo expects before deploy.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aegis/aegis-agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Test agent
+        run: go test ./...
+      - name: Vet agent
+        run: go vet ./...
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: Vulnerability scan
+        run: govulncheck ./...
+
+  ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aegis/aegis-ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install UI deps
+        run: npm install --no-fund --no-audit
+      - name: Build UI
+        run: npm run build
+      - name: Audit production deps
+        run: npm audit --omit=dev --audit-level=high

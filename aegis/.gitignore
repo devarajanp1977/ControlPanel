@@ -1,0 +1,32 @@
+# Build output
+/aegis-agent/bin/
+/aegis-agent/dist/
+/aegis-ui/.next/
+/aegis-ui/out/
+/aegis-ui/node_modules/
+/aegis-ui/.turbo/
+
+# Local state
+/aegis.sock
+/var/
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets — never commit
+/etc/aegis/
+master.key
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Test
+coverage/
+*.out

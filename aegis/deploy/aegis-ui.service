@@ -1,0 +1,29 @@
+# deploy/aegis-ui.service — the UI runs unprivileged and reaches the agent only through the local group-readable socket.
+[Unit]
+Description=Aegis operator UI
+After=network-online.target aegis-agent.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=aegis-ui
+Group=aegis-ui
+EnvironmentFile=/etc/aegis/ui.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+EnvironmentFile=-/etc/aegis/ui.runtime
+Environment=AEGIS_AGENT_SOCKET=/run/aegis/aegis.sock
+WorkingDirectory=/opt/aegis-ui
+ExecStart=/usr/bin/node /opt/aegis-ui/server.js
+Restart=on-failure
+RestartSec=3s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/aegis
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
