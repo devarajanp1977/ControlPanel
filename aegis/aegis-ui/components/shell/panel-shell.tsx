@@ -1,4 +1,5 @@
-// components/shell/panel-shell.tsx — the shell owns the persistent navigation, topbar, and frame shared by every module.
+// components/shell/panel-shell.tsx — Simplified for solo VPS admin use case.
+// The shell owns the persistent navigation, topbar, and frame shared by every module.
 import Link from "next/link";
 
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -15,9 +16,6 @@ type PanelShellProps = {
 };
 
 export function PanelShell({ children, modules, status, overview, operator }: PanelShellProps) {
-  const coreModules = modules.filter((module) => module.status === "foundation");
-  const expansionModules = modules.filter((module) => module.status !== "foundation");
-
   return (
     <div className="aegis-grid">
       <aside className="aegis-rail" style={{ padding: 20 }}>
@@ -30,10 +28,10 @@ export function PanelShell({ children, modules, status, overview, operator }: Pa
               </div>
               <div style={{ marginTop: 12, fontSize: 26, fontWeight: 650 }}>Command centre</div>
               <div style={{ color: "var(--foreground-muted)", marginTop: 6 }}>
-                {overview.host.hostname || status.service} · {overview.host.platform} {overview.host.platform_version}
+                {overview.host.hostname || status.service} 3 {overview.host.platform} {overview.host.platform_version}
               </div>
               <div style={{ color: "var(--foreground-subtle)", marginTop: 4, fontSize: 13 }}>
-                {formatUptime(overview.host.uptime_seconds)} uptime · {status.jobs.length} live jobs visible
+                {formatUptime(overview.host.uptime_seconds)} uptime 3 {status.jobs.length} live jobs
               </div>
             </div>
 
@@ -41,20 +39,20 @@ export function PanelShell({ children, modules, status, overview, operator }: Pa
               <div style={{ fontWeight: 600 }}>Host pulse</div>
               <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
                 <div>
-                  <div className="aegis-kicker" style={{ marginTop: 0 }}>Operators</div>
-                  <div className="aegis-mono" style={{ marginTop: 6, fontSize: 20 }}>{status.operators}</div>
+                  <div className="aegis-kicker" style={{ marginTop: 0 }}>Operator</div>
+                  <div className="aegis-mono" style={{ marginTop: 6, fontSize: 20 }}>{operator.display_name}</div>
                 </div>
                 <div>
                   <div className="aegis-kicker" style={{ marginTop: 0 }}>Modules</div>
-                  <div className="aegis-mono" style={{ marginTop: 6, fontSize: 20 }}>{status.modules}</div>
+                  <div className="aegis-mono" style={{ marginTop: 6, fontSize: 20 }}>{modules.length}</div>
                 </div>
                 <div>
                   <div className="aegis-kicker" style={{ marginTop: 0 }}>Kernel</div>
                   <div style={{ marginTop: 6, fontSize: 14 }}>{overview.host.kernel_version || "unknown"}</div>
                 </div>
                 <div>
-                  <div className="aegis-kicker" style={{ marginTop: 0 }}>Identity</div>
-                  <div style={{ marginTop: 6, fontSize: 14 }}>{operator.display_name}</div>
+                  <div className="aegis-kicker" style={{ marginTop: 0 }}>Status</div>
+                  <div style={{ marginTop: 6, fontSize: 14 }}>{status.service}</div>
                 </div>
               </div>
             </div>
@@ -63,18 +61,9 @@ export function PanelShell({ children, modules, status, overview, operator }: Pa
           <div className="aegis-rail-nav">
             <nav style={{ display: "grid", gap: 18 }}>
               <div className="aegis-rail-section">
-                <div className="aegis-rail-section-label">Core surfaces</div>
+                <div className="aegis-rail-section-label">Core modules</div>
                 <div style={{ display: "grid", gap: 6 }}>
-                  {coreModules.map((module) => (
-                    <PanelNavLink key={module.slug} href={module.route} name={module.name} status={module.status} />
-                  ))}
-                </div>
-              </div>
-
-              <div className="aegis-rail-section">
-                <div className="aegis-rail-section-label">Expansion lanes</div>
-                <div style={{ display: "grid", gap: 6 }}>
-                  {expansionModules.map((module) => (
+                  {modules.map((module) => (
                     <PanelNavLink key={module.slug} href={module.route} name={module.name} status={module.status} />
                   ))}
                 </div>
@@ -83,9 +72,9 @@ export function PanelShell({ children, modules, status, overview, operator }: Pa
           </div>
 
           <div className="aegis-card" style={{ padding: 16, display: "grid", gap: 10 }}>
-            <div style={{ fontWeight: 600 }}>Shared rails</div>
+            <div style={{ fontWeight: 600 }}>Quick actions</div>
             <div style={{ color: "var(--foreground-muted)", lineHeight: 1.6, fontSize: 14 }}>
-              Every module in this shell inherits the same session, audit, and job transport before its privileged verbs land.
+              Every module inherits the same session, audit, and job transport.
             </div>
             <Link href="/audit" style={{ fontSize: 14 }}>Inspect the audit chain</Link>
           </div>
@@ -97,7 +86,7 @@ export function PanelShell({ children, modules, status, overview, operator }: Pa
           <div style={{ display: "grid", gap: 4 }}>
             <div style={{ fontWeight: 600 }}>Server pulse</div>
             <div style={{ color: "var(--foreground-muted)", fontSize: 14 }}>
-              {overview.host.hostname || status.service} · operators {status.operators} · modules {status.modules} · updated {formatTimestamp(status.time)}
+              {overview.host.hostname || status.service} 3 operators {status.operators} 3 updated {formatTimestamp(status.time)}
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
